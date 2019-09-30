@@ -37,5 +37,57 @@ w_list <- w[order(w[,450], decreasing = TRUE),]
 w_list <- subset(w_list, select = c(i450) )
 w_list <- head(w_list, 11)
 w_list <- tail(w_list, 10)
-#result_1 =  cor(m) 
+
+###########################################################
+##Question 2 : Approche Item Item
+## Cosinus entre un vecteur v et chaque colonne dela matrice m
+
+
+m.sparse <- sparseMatrix(u.data[,1],u.data[,2],x=u.data[,3])
+rownames(m.sparse) <- paste('u', 1:nrow(m.sparse), sep='')
+colnames(m.sparse) <- paste('i', 1:ncol(m.sparse), sep='')
+
+cosinus.vm <- function(v,m) { n <- sqrt(colSums(m^2)); (v %*% m)/(n * sqrt(sum(v^2))) }
+
+# Trouve les indexes des premières 'n' valeurs maximales d'une matrice
+max.nindex <- function(m, n=5) {
+  i <- order(m, decreasing=TRUE)
+  return(i[1:n])
+}
+min.nindex <- function(m, n=5) {
+  i <- order(m)
+  return(i[1:n])
+}
+
+sum(m.sparse[,450]>0)
+
+u.item$movie.title[450]
+
+m <- as.matrix(m.sparse)
+m[m==0] <- NA
+sum(!is.na(m.sparse[,450]))
+
+n.voisins <- 20 + 1
+votes.communs <- (colSums((m.sparse[,450] * m.sparse) > 0)) # nombre de votes communs
+## Histogramme du nombre de films communs avec Star Trek V
+
+hist(round(m.sparse[,450]>0) %*%  round(as.matrix(m.sparse)>0))
+
+## visualisation des distances avec les autres films
+distance.na.450 <- sqrt(colSums((m[,450] - m)^2, na.rm=T)) # ignore les valeurs manquantes
+distance.450 <- sqrt(colSums((m.sparse[,450] - m.sparse)^2)) # valeurs manquantes à 0
+distance.450[450]            # petite vérification
+
+par(mfrow=c(2,2))
+hist(distance.450)                      # histogramme des distances
+hist(distance.na.450)                   # idem
+distance.dist.na.450 <- as.matrix(dist(t(m)))[450,] # utilisation de la fonction dist avec NA
+distance.dist.450 <- as.matrix(dist(t(m.sparse)))[450,] # fonction dist avec val. manq. = 0
+hist(distance.dist.na.450)              # nouvel histogramme pour dist
+hist(distance.dist.450)                 # idem
+
+## calcul Des voisins
+(i.distance.450 <- min.nindex(distance.450, n.voisins))
+
+votes.communs[i.distance.450]           # bonne nouvelle : pas de voisins sans votes communs, mais tout de même plusieurs voisins qui n'ont qu'un vote en commun.
 
