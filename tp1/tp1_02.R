@@ -89,5 +89,39 @@ hist(distance.dist.450)                 # idem
 ## calcul Des voisins
 (i.distance.450 <- min.nindex(distance.450, n.voisins))
 
-votes.communs[i.distance.450]           # bonne nouvelle : pas de voisins sans votes communs, mais tout de même plusieurs voisins qui n'ont qu'un vote en commun.
+votes.communs[i.distance.450]    
 
+
+## list des voisins 20 voisins
+voisins <- tail(i.distance.450, 20)
+
+
+## Cosinus
+## Fonction qui calcul les cosinus entre les lignes
+matrix.cos <- function(m) {
+  (m %*% t(m)) / ( t(matrix(sqrt(rowSums(m^2)),nrow(m),nrow(m)))
+                   * (sqrt(rowSums(m^2))) )
+}
+## Calcul des valeurs centrées par rapport aux items
+(m.centre <- t(t(m) - colMeans(m[-1,])))
+voisins
+(w_voisins <- matrix.cos(t(m[-1,]))[450,voisins])
+cor(m[-1,])
+m
+mean(m[,'i450'], na.rm=T) + 1/sum(abs(w_voisins)) * (w_voisins %*% m.centre[450,voisins])
+
+## Cosinus normalisé par utilisateur
+m <- sparseMatrix(u.data[,1],u.data[,2],x=u.data[,3])
+rownames(m) <- paste('u', 1:nrow(m), sep='')
+colnames(m) <- paste('i', 1:ncol(m), sep='')
+
+(m.norm <- scale(m, scale=F))
+m.rcos <- function(m) {
+  m.vl <- sqrt(rowSums(m^2))
+  ( m %*% t(m) ) / (m.vl %o% m.vl)
+}
+(m.norm.cos <- m.rcos(m.norm[,-1]))
+sum(abs(m.rcos(m.norm[,-1])[c(2,4),450]))
+
+## Estimation du vote
+mean(m[450,-1]) + sum(abs(m.norm.cos[c(2,4),450]))^-1 * ( m.norm[c(2,4),450] %*% m.norm.cos[c(2,4),450] )
