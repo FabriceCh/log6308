@@ -1,0 +1,67 @@
+#load data
+from nltk.corpus import PlaintextCorpusReader
+class_data = 'path/to/data/folder' 
+corpus = PlaintextCorpusReader(corpus_root, '.*txt') 
+
+#generate term frequency document
+#panda
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+
+docs = ['why hello there', 'omg hello pony', 'she went there? omg']
+vec = CountVectorizer()
+X = vec.fit_transform(docs)
+df = pd.DataFrame(X.toarray(), columns=vec.get_feature_names())
+print(df)
+
+# texmining
+import textmining
+
+def termdocumentmatrix_example():
+    # Create some very short sample documents
+    doc1 = 'John and Bob are brothers.'
+    doc2 = 'John went to the store. The store was closed.'
+    doc3 = 'Bob went to the store too.'
+    # Initialize class to create term-document matrix
+    tdm = textmining.TermDocumentMatrix()
+    # Add the documents
+    tdm.add_doc(doc1)
+    tdm.add_doc(doc2)
+    tdm.add_doc(doc3)
+    # Write out the matrix to a csv file. Note that setting cutoff=1 means
+    # that words which appear in 1 or more documents will be included in
+    # the output (i.e. every word will appear in the output). The default
+    # for cutoff is 2, since we usually aren't interested in words which
+    # appear in a single document. For this example we want to see all
+    # words however, hence cutoff=1.
+    tdm.write_csv('matrix.csv', cutoff=1)
+    # Instead of writing out the matrix you can also access its rows directly.
+    # Let's print them to the screen.
+    for row in tdm.rows(cutoff=1):
+            print row
+
+termdocumentmatrix_example() 
+
+
+#Term Frequency - Inverse Document Frenquency
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+ 
+# Sample data for analysis
+data1 = "Java is a language for programming that develops a software for several platforms. A compiled code or bytecode on Java application can run on most of the operating systems including Linux, Mac operating system, and Linux. Most of the syntax of Java is derived from the C++ and C languages."
+data2 = "Python supports multiple programming paradigms and comes up with a large standard library, paradigms included are object-oriented, imperative, functional and procedural."
+data3 = "Go is typed statically compiled language. It was created by Robert Griesemer, Ken Thompson, and Rob Pike in 2009. This language offers garbage collection, concurrency of CSP-style, memory safety, and structural typing."
+ 
+df1 = pd.DataFrame({'Java': [data1], 'Python': [data2], 'Go': [data2]})
+ 
+# Initialize
+vectorizer = TfidfVectorizer()
+doc_vec = vectorizer.fit_transform(df1.iloc[0])
+ 
+# Create dataFrame
+df2 = pd.DataFrame(doc_vec.toarray().transpose(),
+                   index=vectorizer.get_feature_names())
+ 
+# Change column headers
+df2.columns = df1.columns
+print(df2)
